@@ -29,7 +29,7 @@ public class Pathfinding {
     JLabel algL = new JLabel("Algorithms:");
     private String[] algorithms = {"Dijkstra","A*"};
     JButton searchB = new JButton("Start Search");
-    JButton startB = new JButton("Start Node");
+    JButton resetB = new JButton("Reset");
     JComboBox algorithmsBx = new JComboBox(algorithms);
     Node[][] grid; // 2D array that represents the nodes in the grid, each of which have a distance from start, and previous node
     Grid canvas; // GUI representation of the grid data structure
@@ -55,18 +55,20 @@ public class Pathfinding {
         frame.getContentPane().setLayout(null);
 
         toolP.setBorder(BorderFactory.createTitledBorder(loweredetched, "Controls"));
-        int space = 25;
 
         toolP.setLayout(null);
         toolP.setBounds(10, 10, 210, 600);
+
         searchB.setBounds(40, 25, 120, 25);
         toolP.add(searchB);
 
-        algL.setBounds(40, 75,120,25);
+        resetB.setBounds(40,65, 120, 25);
+        toolP.add(resetB);
+
+        algL.setBounds(40, 100,120,25);
         toolP.add(algL);
 
-
-        algorithmsBx.setBounds(40, 100, 120, 25);
+        algorithmsBx.setBounds(40, 125, 120, 25);
         toolP.add(algorithmsBx);
 
         frame.getContentPane().add(toolP);
@@ -79,15 +81,18 @@ public class Pathfinding {
             @Override
             public void actionPerformed(ActionEvent e) {
                 reset();
+                solving = true;
             }
         });
+
         algorithmsBx.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 curAlg = algorithmsBx.getSelectedIndex();
-               update();
+                update();
             }
         });
+        startSearch();
     }
 
     public void startSearch(){
@@ -111,6 +116,22 @@ public class Pathfinding {
             } catch(Exception e) {}
         }
         startSearch();	//START STATE
+    }
+
+    public void delay() {	//DELAY METHOD
+        try {
+            Thread.sleep(delay);
+        } catch(Exception e) {}
+    }
+
+    public void reset(){
+        for(int x = 0; x < nodes; x++) {
+            for(int y = 0; y < nodes; y++) {
+                Node current = grid[x][y];
+                if(current.getType() == 4 || current.getType() == 5)	//CHECK TO SEE IF CURRENT NODE IS EITHER CHECKED OR FINAL PATH
+                    grid[x][y] = new Node(3,x,y);	//RESET IT TO AN EMPTY NODE
+            }
+        }
     }
 
     public void update(){
@@ -200,12 +221,14 @@ public class Pathfinding {
         private int lastY;
         private int x;
         private int y;
+        private int dist;
 
 
         public Node(int type, int x, int y) {
             nType = type;
             this.x = x;
             this.y = y;
+            dist = 0;
         }
 
         public int getX() {return x;}		//GET METHODS
@@ -213,15 +236,83 @@ public class Pathfinding {
         public int getLastX() {return lastX;}
         public int getLastY() {return lastY;}
         public int getType() {return nType;}
+        private int getDist() {return dist;}
 
         public void setType(int type) {nType = type;}		//SET METHODS
         public void setLastNode(int x, int y) {lastX = x; lastY = y;}
+        public void setDist(int dist){ this.dist = dist;}
     }
 
 
     public class Algorithm {
         public void Dijkstra(){
-            ArrayList<Node> priority = new ArrayList<Node>();
+            ArrayList<Node> progress = new ArrayList<Node>();
+            progress.add((grid[startx][starty]));
+            while(solving) {
+                if (progress.size() <= 0) {
+                    solving = false;
+                    break;
+                }
+
+                int newDist = progress.get(0).getDist() + 1;
+                ArrayList<Node> explored = exploreAdj(progress.get(0), newDist);
+                if (explored.size() > 0) {
+                    progress.remove(0);
+                    progress.addAll(explored);
+                    update();
+                    delay();
+                } else progress.remove(0);
+            }
+        }
+
+        public ArrayList<Node> exploreAdj(Node current, int dist){
+            //Must check four adjacent blocks
+            ArrayList<Node> explored = new ArrayList<Node>();
+            if(current.getX() - 1 > -1) {
+                Node neighbor = grid[current.x - 1][current.getY()];
+                if(neighbor.getType() != 0 && neighbor.getType() != 2 && neighbor.getDist() == 0) {
+                    explore(neighbor, current.getX(), current.getY(), dist);
+                    explored.add(neighbor);
+                }
+            }
+            if(current.getX() + 1 < nodes) {
+                Node neighbor = grid[current.getX() + 1][current.getY()];
+                if (neighbor.getType() != 0 && neighbor.getType() != 2 && neighbor.getDist() == 0) {
+                    explore(neighbor, current.getX(), current.getY(), dist);
+                    explored.add(neighbor);
+                }
+            }
+            if(current.getY() - 1 > -1) {
+                Node neighbor = grid[current.getX()][current.getY() - 1];
+                if(neighbor.getType() != 0 && neighbor.getType() != 2 && neighbor.getDist() == 0) {
+                    explore(neighbor, current.getX(), current.getY(), dist);
+                    explored.add(neighbor);
+                }
+            }
+            if(current.getY() + 1 < nodes) {
+                Node neighbor = grid[current.getX()][current.getY() + 1];
+                if (neighbor.getType() != 0 && neighbor.getType() != 2 && neighbor.getDist() == 0) {
+                    explore(neighbor, current.getX(), current.getY(), dist);
+                    explored.add(neighbor);
+                }
+            }
+            return explored;
+        }
+
+        public void explore(Node current, int lastx, int lasty, int dist){
+            if(current.getType() != 5){
+                current.setType(4);
+                current.setLastNode(lastx,lasty);
+                current.setDist(dist);
+            }
+
+            if (current.getType() == 5) {
+                current.setLastNode(lastx,lasty);
+                finalPath(current);
+            }
+        }
+
+        public void finalPath(Node current){
 
         }
     }
