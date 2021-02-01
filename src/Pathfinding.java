@@ -300,20 +300,33 @@ public class Pathfinding {
         }
 
         public void explore(Node current, int lastx, int lasty, int dist){
-            if(current.getType() != 5){
+            if(current.getType() != 1){
                 current.setType(4);
                 current.setLastNode(lastx,lasty);
                 current.setDist(dist);
+
             }
 
-            if (current.getType() == 5) {
+            if (current.getType() == 1) {
                 current.setLastNode(lastx,lasty);
+                current.setDist(dist);
                 finalPath(current);
             }
         }
 
         public void finalPath(Node current){
-
+            int length = current.getDist();
+            System.out.println(current.getDist());
+            int lx = current.getLastX();
+            int ly = current.getLastY();
+            while(length > 1) {	//BACKTRACK FROM THE END OF THE PATH TO THE START
+                current = grid[lx][ly];
+                current.setType(5);
+                lx = current.getLastX();
+                ly = current.getLastY();
+                length--;
+            }
+            solving = false;
         }
     }
 
