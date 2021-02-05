@@ -1,12 +1,29 @@
-import javax.swing.*;
+import java.awt.Graphics;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+import java.util.Random;
+
+import javax.swing.JFrame;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.Random;
+import javax.swing.JComboBox;
 
 public class Pathfinding {
 
@@ -80,8 +97,23 @@ public class Pathfinding {
         searchB.addActionListener(new ActionListener(){        //ACTION LISTENERS
             @Override
             public void actionPerformed(ActionEvent e) {
-                reset();
+                solving=false;
+
+                clearMap();
+                update();
+                try {
+                    Thread.sleep(40);
+                } catch(Exception g) {}
                 solving = true;
+            }
+        });
+
+        resetB.addActionListener(new ActionListener(){        //ACTION LISTENERS
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                solving = false;
+                clearMap();
+                update();
             }
         });
 
@@ -125,12 +157,20 @@ public class Pathfinding {
     }
 
     public void reset(){
+        solving = false;
         for(int x = 0; x < nodes; x++) {
             for(int y = 0; y < nodes; y++) {
                 Node current = grid[x][y];
                 if(current.getType() == 4 || current.getType() == 5)	//CHECK TO SEE IF CURRENT NODE IS EITHER CHECKED OR FINAL PATH
                     grid[x][y] = new Node(3,x,y);	//RESET IT TO AN EMPTY NODE
+                if(current.getType() == 1)	//CHECK TO SEE IF CURRENT NODE IS EITHER CHECKED OR FINAL PATH
+                    grid[x][y] = new Node(1,x,y);	//RESET IT TO AN EMPTY NODE
             }
+            startx = 1;
+            starty = 9;
+            finishx = 18;
+            finishy = 9;
+
         }
     }
 
@@ -206,10 +246,22 @@ public class Pathfinding {
         public void mouseEntered(MouseEvent e) {}
 
         @Override
-        public void mouseExited(MouseEvent e) {}
+        public void mouseExited(MouseEvent e) {
+
+        }
 
         @Override
-        public void mousePressed(MouseEvent e) {}
+        public void mousePressed(MouseEvent e) {
+            try {
+                int mouseX = e.getX() / nSize;
+                int mouseY = e.getY() / nSize;
+                Node current = new Node(3, mouseX, mouseY);
+                if ((mouseX > -1) && (mouseX < nodes) && (mouseY > -1) && (mouseY < nodes)) {
+                    grid[mouseX][mouseY] = new Node(2, mouseX, mouseY);
+                }
+                canvas.repaint();
+            }catch(Exception z){}
+        }
 
         @Override
         public void mouseReleased(MouseEvent e) {}
