@@ -99,7 +99,7 @@ public class Pathfinding {
             public void actionPerformed(ActionEvent e) {
                 solving=false;
 
-                clearMap();
+                reset();
                 update();
                 try {
                     Thread.sleep(40);
@@ -157,21 +157,16 @@ public class Pathfinding {
     }
 
     public void reset(){
-        solving = false;
-        for(int x = 0; x < nodes; x++) {
-            for(int y = 0; y < nodes; y++) {
-                Node current = grid[x][y];
-                if(current.getType() == 4 || current.getType() == 5)	//CHECK TO SEE IF CURRENT NODE IS EITHER CHECKED OR FINAL PATH
-                    grid[x][y] = new Node(3,x,y);	//RESET IT TO AN EMPTY NODE
-                if(current.getType() == 1)	//CHECK TO SEE IF CURRENT NODE IS EITHER CHECKED OR FINAL PATH
-                    grid[x][y] = new Node(1,x,y);	//RESET IT TO AN EMPTY NODE
+//        grid = new Node[nodes][nodes];
+        for (int x = 0; x < nodes; x++) {
+            for (int y = 0; y < nodes; y++) {
+                if(grid[x][y].getType() != 2) {
+                    grid[x][y] = new Node(3, x, y);
+                }
             }
-            startx = 1;
-            starty = 9;
-            finishx = 18;
-            finishy = 9;
-
         }
+        grid[startx][starty] = new Node(0, startx, starty);
+        grid[finishx][finishy] = new Node(1, finishx, finishy);
     }
 
     public void update(){
@@ -234,7 +229,17 @@ public class Pathfinding {
         }
 
         @Override
-        public void mouseDragged(MouseEvent e) {}
+        public void mouseDragged(MouseEvent e) {
+            try {
+                int mouseX = e.getX() / nSize;
+                int mouseY = e.getY() / nSize;
+                Node current = new Node(3, mouseX, mouseY);
+                if ((mouseX > -1) && (mouseX < nodes) && (mouseY > -1) && (mouseY < nodes)) {
+                    grid[mouseX][mouseY] = new Node(2, mouseX, mouseY);
+                }
+                canvas.repaint();
+            }catch(Exception z){}
+        }
 
         @Override
         public void mouseMoved(MouseEvent e) {}
