@@ -30,6 +30,8 @@ public class Pathfinding {
     public int nodes = 20;
     private int delay = 30;
     //private int gwidth = 20;
+    private int lastX;
+    private int lastY;
     private int startx = 9;
     private int starty = 9;
     private int finishx = 9;
@@ -225,7 +227,6 @@ public class Pathfinding {
                     g.drawRect(x * nSize, y * nSize, nSize, nSize);
                 }
             }
-
         }
 
         @Override
@@ -233,9 +234,14 @@ public class Pathfinding {
             try {
                 int mouseX = e.getX() / nSize;
                 int mouseY = e.getY() / nSize;
-                Node current = new Node(3, mouseX, mouseY);
-                if ((mouseX > -1) && (mouseX < nodes) && (mouseY > -1) && (mouseY < nodes)) {
-                    grid[mouseX][mouseY] = new Node(2, mouseX, mouseY);
+                if ((mouseX > -1) && (mouseX < nodes) && (mouseY > -1) && (mouseY < nodes) && ((mouseX != lastX) || (mouseY != lastY))) {
+                    if(grid[mouseX][mouseY].getType() == 3){
+                        grid[mouseX][mouseY] = new Node(2, mouseX, mouseY);
+                    }else if((grid[mouseX][mouseY].getType()) != 0 && (grid[mouseX][mouseY].getType() != 1)) {
+                        grid[mouseX][mouseY] = new Node(3, mouseX, mouseY);
+                    }
+                    lastX = mouseX;
+                    lastY = mouseY;
                 }
                 canvas.repaint();
             }catch(Exception z){}
@@ -260,9 +266,15 @@ public class Pathfinding {
             try {
                 int mouseX = e.getX() / nSize;
                 int mouseY = e.getY() / nSize;
-                Node current = new Node(3, mouseX, mouseY);
+
                 if ((mouseX > -1) && (mouseX < nodes) && (mouseY > -1) && (mouseY < nodes)) {
-                    grid[mouseX][mouseY] = new Node(2, mouseX, mouseY);
+                    if(grid[mouseX][mouseY].getType() == 3){
+                        grid[mouseX][mouseY] = new Node(2, mouseX, mouseY);
+                    }else if((grid[mouseX][mouseY].getType()) != 0 && (grid[mouseX][mouseY].getType() != 1)) {
+                        grid[mouseX][mouseY] = new Node(3, mouseX, mouseY);
+                    }
+                    lastX = mouseX;
+                    lastY = mouseY;
                 }
                 canvas.repaint();
             }catch(Exception z){}
