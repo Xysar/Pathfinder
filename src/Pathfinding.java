@@ -304,10 +304,10 @@ public class Pathfinding {
             dist = 0;
         }
 
-        public double getEucl(){
+        public int getManhattanDist(){
             int a = Math.abs(finishx - x);
             int b = Math.abs(finishy - y);
-            return Math.sqrt((a*a) + (b*b));
+            return (a + b) * 2;
         }
 
         public int getX() {return x;}		//GET METHODS
@@ -432,8 +432,8 @@ public class Pathfinding {
 
     class AStarComparator implements Comparator<Node> {
         public int compare(Node a, Node b){
-            double compA = a.getDist() + a.getEucl();
-            double compB = b.getDist() + b.getEucl();
+            int compA = a.getDist() + a.getManhattanDist();
+            int compB = b.getDist() + b.getManhattanDist();
             if(compA < compB){
                 return -1;
             } else if(compA > compB){
