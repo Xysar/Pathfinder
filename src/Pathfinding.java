@@ -9,7 +9,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.Comparator;
+import java.util.PriorityQueue;
+import java.util.*;
 
 import javax.swing.JFrame;
 import javax.swing.BorderFactory;
@@ -134,6 +136,8 @@ public class Pathfinding {
             switch(curAlg) {
                 case 0:
                     Alg.Dijkstra();
+                case 1:
+                    Alg.aStar();
             }
         }
         pause();
@@ -300,6 +304,12 @@ public class Pathfinding {
             dist = 0;
         }
 
+        public double getEucl(){
+            int a = Math.abs(finishx - x);
+            int b = Math.abs(finishy - y);
+            return Math.sqrt((a*a) + (b*b));
+        }
+
         public int getX() {return x;}		//GET METHODS
         public int getY() {return y;}
         public int getLastX() {return lastX;}
@@ -333,6 +343,27 @@ public class Pathfinding {
                 } else progress.remove(0);
             }
         }
+
+        public void aStar(){
+            PriorityQueue<Node> progress = new PriorityQueue<Node>(new AStarComparator());
+            progress.add((grid[startx][starty]));
+            while(solving) {
+                if (progress.size() <= 0) {
+                    solving = false;
+                    break;
+                }
+                int newDist = progress.peek().getDist() + 1;
+                ArrayList<Node> explored = exploreAdj(progress.peek(), newDist);
+                if (explored.size() > 0) {
+                    progress.poll();
+                    progress.addAll(explored);
+                    update();
+                    delay();
+                } else progress.poll();
+            }
+        }
+
+
 
         public ArrayList<Node> exploreAdj(Node current, int dist){
             //Must check four adjacent blocks
@@ -399,9 +430,18 @@ public class Pathfinding {
         }
     }
 
-
-
-
+    class AStarComparator implements Comparator<Node> {
+        public int compare(Node a, Node b){
+            double compA = a.getDist() + a.getEucl();
+            double compB = b.getDist() + b.getEucl();
+            if(compA < compB){
+                return -1;
+            } else if(compA > compB){
+                return 1;
+            }
+            return 0;
+        }
+    }
 
 }
 
