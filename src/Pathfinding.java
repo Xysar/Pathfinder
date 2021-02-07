@@ -31,7 +31,6 @@ public class Pathfinding {
 
     public int nodes = 20;
     private int delay = 30;
-    //private int gwidth = 20;
     private int lastX;
     private int lastY;
     private int startx = 9;
