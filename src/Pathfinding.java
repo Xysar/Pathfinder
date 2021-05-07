@@ -403,7 +403,6 @@ public class Pathfinding {
                 current.setType(4);
                 current.setLastNode(lastx,lasty);
                 current.setDist(dist);
-
             }
 
             if (current.getType() == 1) {
