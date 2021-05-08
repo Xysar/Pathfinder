@@ -38,6 +38,7 @@ public class Pathfinding {
     private int finishx = 9;
     private int finishy = 9;
     private int curAlg = 0;
+    private int curSize = 0;
     Algorithm Alg = new Algorithm();
     private final int WIDTH = 850;
     private final int HEIGHT = 650;
@@ -48,9 +49,11 @@ public class Pathfinding {
     JPanel toolP = new JPanel();
     JLabel algL = new JLabel("Algorithms:");
     private String[] algorithms = {"Dijkstra","A*"};
+    private String[] gSizes = {"20", "30", "40"};
     JButton searchB = new JButton("Start Search");
     JButton resetB = new JButton("Reset");
     JComboBox algorithmsBx = new JComboBox(algorithms);
+    JComboBox gridSizeBx = new JComboBox(gSizes);
     Node[][] grid; // 2D array that represents the nodes in the grid, each of which have a distance from start, and previous node
     Grid canvas; // GUI representation of the grid data structure
     Border loweredetched = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
@@ -91,6 +94,9 @@ public class Pathfinding {
         algorithmsBx.setBounds(40, 125, 120, 25);
         toolP.add(algorithmsBx);
 
+        gridSizeBx.setBounds(40, 175, 120, 25);
+        toolP.add(gridSizeBx);
+
         frame.getContentPane().add(toolP);
 
         canvas = new Grid();
@@ -101,7 +107,6 @@ public class Pathfinding {
             @Override
             public void actionPerformed(ActionEvent e) {
                 solving=false;
-
                 reset();
                 update();
                 try {
@@ -124,6 +129,27 @@ public class Pathfinding {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 curAlg = algorithmsBx.getSelectedIndex();
+                update();
+            }
+        });
+
+        gridSizeBx.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                curSize = gridSizeBx.getSelectedIndex();
+                switch(curSize) {
+                    case 0:
+                        nodes = 20;
+                        break;
+                    case 1:
+                        nodes = 30;
+                        break;
+                    case 2:
+                        nodes = 40;
+                        break;
+                }
+                nSize = gSize/nodes;
+                clearMap();
                 update();
             }
         });
@@ -162,7 +188,7 @@ public class Pathfinding {
     }
 
     public void reset(){
-//        grid = new Node[nodes][nodes];
+      //  grid = new Node[nodes][nodes];
         for (int x = 0; x < nodes; x++) {
             for (int y = 0; y < nodes; y++) {
                 if(grid[x][y].getType() != 2) {
@@ -179,10 +205,26 @@ public class Pathfinding {
     }
 
     public void clearMap() {
-        startx = 1;
-        starty = 9;
-        finishx = 18;
-        finishy = 9;
+        switch(curSize) {
+            case 0:
+            startx = 1;
+            starty = 9;
+            finishx = 18;
+            finishy = 9;
+            break;
+            case 1:
+                startx = 1;
+                starty = 14;
+                finishx = 28;
+                finishy = 14;
+                break;
+            case 2:
+                startx = 1;
+                starty = 19;
+                finishx = 38;
+                finishy = 19;
+                break;
+        }
         grid = new Node[nodes][nodes];
         for (int x = 0; x < nodes; x++) {
             for (int y = 0; y < nodes; y++) {
